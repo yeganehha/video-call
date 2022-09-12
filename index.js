@@ -71,6 +71,16 @@ async function join() {
   // play local video track
   localTracks.videoTrack.play("local-player");
   $("#local-player-name").text(`localVideo(${options.uid})`);
+  $("#local-player-name").append(`
+    <span id="mute-local" class="btn btn-danger btn-sm">MUTE</span>
+    <span id="no-camera-local" class="btn btn-danger btn-sm">NoCamera</span>
+    `);
+  
+  $('#mute-local').click(function() {
+  });
+  $('#no-camera-local').click(function() {
+  });
+  
 
   // publish local tracks to channel
   await client.publish(Object.values(localTracks));
@@ -108,7 +118,7 @@ async function subscribe(user, mediaType) {
   if (mediaType === 'video') {
     const player = $(`
       <div id="player-wrapper-${uid}">
-        <p class="player-name">remoteUser(${uid})</p>
+        <p class="player-name">remoteUser(${uid})</p><a id="stop-player-${uid}" type="button" class="btn btn-danger btn-sm">STOP</a>
         <div id="player-${uid}" class="player"></div>
       </div>
     `);
