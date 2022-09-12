@@ -1,6 +1,18 @@
 // create Agora client
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
+// BLOCK CONSOLE OPEN
+// var obj = Object.defineProperties(new Error,  {
+//   message: {
+//     get() {
+//       alert('sss');
+//     }
+//   },
+//   toString: { value() { (new Error).stack.includes('toString@')&&console.log('Safari')} }
+// });
+// console.log(obj);
+
+
 var localTracks = {
   videoTrack: null,
   audioTrack: null
@@ -72,13 +84,27 @@ async function join() {
   localTracks.videoTrack.play("local-player");
   $("#local-player-name").text(`localVideo(${options.uid})`);
   $("#local-player-name").append(`
-    <span id="mute-local" class="btn btn-danger btn-sm">MUTE</span>
+    <span id="mute-local" class="btn btn-danger btn-sm">Mute</span>
     <span id="no-camera-local" class="btn btn-danger btn-sm">NoCamera</span>
-    `);
+  `);
   
   $('#mute-local').click(function() {
+    if ($('#mute-local').text() === 'Mute') {
+      localTracks.audioTrack.setMuted(false)
+      $('#mute-local').text('UnMute')
+    } else {
+      localTracks.audioTrack.setMuted(true)
+      $('#mute-local').text('Mute')
+    }
   });
   $('#no-camera-local').click(function() {
+    if ($('#no-camera-local').text() === 'NoCamera') {
+      localTracks.videoTrack.setMuted(true)
+      $('#no-camera-local').text('EnableCamera')
+    } else {
+      localTracks.videoTrack.setMuted(false)
+      $('#no-camera-local').text('NoCamera')
+    }
   });
   
 
@@ -118,12 +144,27 @@ async function subscribe(user, mediaType) {
   if (mediaType === 'video') {
     const player = $(`
       <div id="player-wrapper-${uid}">
-        <p class="player-name">remoteUser(${uid})</p><a id="stop-player-${uid}" type="button" class="btn btn-danger btn-sm">STOP</a>
+        <p class="player-name">remoteUser(${uid})</p>
         <div id="player-${uid}" class="player"></div>
       </div>
     `);
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
+    $(`#player-wrapper-${uid} .player-name`).append(`
+      <span id="mute-player-${uid}" class="btn btn-danger btn-sm">Mute</span>
+      <span id="no-camera-player-${uid}" class="btn btn-danger btn-sm">NoCamera</span>
+    `);
+    
+    
+  $(`#no-camera-player-${uid}`).click(function() {
+    if ($(`#no-camera-player-${uid}`).text() === 'NoCamera') {
+      user.videoTrack.setEnabled(false)
+      $(`#no-camera-player-${uid}`).text('EnableCamera')
+    } else {
+      user.videoTrack.setEnabled(true)
+      $(`#no-camera-player-${uid}`).text('NoCamera')
+    }
+  });
   }
   if (mediaType === 'audio') {
     user.audioTrack.play();
